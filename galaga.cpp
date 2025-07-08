@@ -656,7 +656,7 @@ void playGame()
         }
         else if(wave == 3)
         {
-            if(frameCount == 119)
+            if(frameCount <= 119)
             {
                 currentWave3SpawnIndex = 0;
                 
@@ -680,10 +680,10 @@ void playGame()
                 //now you play until you die
 
                 //release next enemy every 3 seconds until 100 waves have been released
-                    if(frameCount == (120 + (60 * 3 * currentWave3SpawnIndex)))//120 because thats the start + 60fps * 3sec * wave spawn index (every 3 seconds)
+                    if(frameCount == (120 + (60 * 2 * currentWave3SpawnIndex)))//120 because thats the start + 60fps * 3sec * wave spawn index (every 3 seconds)
                     {
                         //determine what type of wave it's going to be
-                        int type = GetRandomValue(1,3);
+                        int type = GetRandomValue(1,4);
 
                         if(type == 1)
                         {
@@ -739,7 +739,7 @@ void playGame()
 
                             enemiesDeployed = enemiesDeployed + 5;
                         }
-                        else if(type == 3)
+                        else if(type >= 3)
                         {
                             //swoop
                             int rightOrLeft = GetRandomValue(0,1);
@@ -974,31 +974,34 @@ void playGame()
         {
             for(int j = 0; j < numberOfEnemies; j++)
             {
-                if(CheckCollisionRecs(rockets[i], enemies[j]))
+                if(enemyShipType[j] != DEAD)
                 {
-                    enemies[j].x = -1;
-                    enemies[j].y = -1;
-                    enemies[j].width = -1;
-                    enemies[j].height = -1;
-
-                    if(enemyShipType[j] == SLOW)
+                    if(CheckCollisionRecs(rockets[i], enemies[j]))
                     {
-                        score += 10;
-                    }
-                    else if(enemyShipType[j] == FAST)
-                    {
-                        score += 20;
-                    }
-                    else if(enemyShipType[j] == SWOOP)
-                    {
-                        score += 30;
-                    }
+                        enemies[j].x = -1;
+                        enemies[j].y = -1;
+                        enemies[j].width = -1;
+                        enemies[j].height = -1;
 
-                    rockets[i] = {0, 0, 1 ,1};
+                        if(enemyShipType[j] == SLOW)
+                        {
+                            score += 10;
+                        }
+                        else if(enemyShipType[j] == FAST)
+                        {
+                            score += 20;
+                        }
+                        else if(enemyShipType[j] == SWOOP)
+                        {
+                            score += 30;
+                        }
 
-                    
-                    enemyShipType[j] = DEAD;
-                    enemiesKilled++;
+                        rockets[i] = {0, 0, 1 ,1};
+
+                        
+                        enemyShipType[j] = DEAD;
+                        enemiesKilled++;
+                    }
                 }
             }
         }
@@ -1060,6 +1063,8 @@ void gameOver()
     //reset values used during the game
     lives = 3;
     timeLastHit = 0;
+    wave = 1;
+    
     for(int i = 0; i < numberOfEnemies; i++)
     {
         enemies[i] = {-1, -1, -1, -1};
