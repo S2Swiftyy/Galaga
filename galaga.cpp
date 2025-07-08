@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
 using namespace std;
 
 int highScore = 0;
@@ -70,7 +71,7 @@ const float rocketMoveValue = 4;
 int timeLastFired = 0;
 
 //value for which wave you are on
-int wave = 1;
+int wave = 2;
 int currentWave3SpawnIndex = 0;
 
 //value for all of the enemy ships
@@ -251,6 +252,33 @@ void startMenu()
 
 
         EndDrawing();
+    }
+
+    //saves the high score before closing
+    ifstream readFile("save/highScore.txt");
+    int prevScore;
+    readFile >> prevScore;
+    readFile.close();
+
+    ofstream saveFile("save/highScore.txt", ios::trunc);
+
+    if(saveFile.is_open())
+    {
+        if(highScore > prevScore)
+        {
+            saveFile << highScore;
+        }
+        else
+        {
+            saveFile << prevScore;
+        }
+
+        saveFile.close();
+    }
+    else
+    {
+        printf("\nError: Score Not Saved\n");
+
     }
 
     CloseWindow();
@@ -545,7 +573,7 @@ void playGame()
                 {
                     if(enemies[i].x == swooperRightX && enemies[i].y == swooperYValue) //if the enemy has been initialized but not moved yet
                     {
-                        swooperTargetX[i] = shipBodyXPos;
+                        swooperTargetX[i] = (shipBodyXPos + (shipBodyWidth / 2));
 
                         swooperXMoveValue[i] = (swooperTargetX[i] - enemies[i].x) / 120.0f;
 
@@ -559,7 +587,7 @@ void playGame()
                         enemies[i].x = enemies[i].x + swooperXMoveValue[i];
                         enemies[i].y = enemies[i].y + swooperYMoveValue;
 
-                        if(enemies[i].y >= shipBodyYPos)
+                        if(enemies[i].y >= ((shipFlairYPos + shipFlairHeight) - swooperYValue))
                         {
                             swoopingDown[i] = false; //when the enemy reaches its target, stop going down
                         }
@@ -616,7 +644,7 @@ void playGame()
                         {
                             if(GetRandomValue(1,5) > 3) //20% chance to swoop
                             {
-                                swooperTargetX[i] = shipBodyXPos;
+                                swooperTargetX[i] = (shipBodyXPos + (shipBodyWidth / 2));
 
                                 swooperXMoveValue[i] = (swooperTargetX[i] - enemies[i].x) / 120.0f;
 
@@ -857,7 +885,7 @@ void playGame()
                     {
                         if(((enemies[i].x == swooperRightX) | (enemies[i].x == swooperLeftX)) && enemies[i].y == swooperYValue) //if the enemy has been initialized but not moved yet
                         {
-                            swooperTargetX[i] = shipBodyXPos;
+                            swooperTargetX[i] = (shipBodyXPos + (shipBodyWidth / 2));
 
                             swooperXMoveValue[i] = (swooperTargetX[i] - enemies[i].x) / 120.0f;
 
@@ -871,7 +899,7 @@ void playGame()
                             enemies[i].x = enemies[i].x + swooperXMoveValue[i];
                             enemies[i].y = enemies[i].y + swooperYMoveValue;
 
-                            if(enemies[i].y >= shipBodyYPos)
+                            if(enemies[i].y >= ((shipFlairYPos + shipFlairHeight) - swooperYValue))
                             {
                                 swoopingDown[i] = false; //when the enemy reaches its target, stop going down
                             }
@@ -928,7 +956,7 @@ void playGame()
                             {
                                 if(GetRandomValue(1,5) > 3) //20% chance to swoop
                                 {
-                                    swooperTargetX[i] = shipBodyXPos;
+                                    swooperTargetX[i] = (shipBodyXPos + (shipBodyWidth / 2));
 
                                     swooperXMoveValue[i] = (swooperTargetX[i] - enemies[i].x) / 120.0f;
 
@@ -1051,6 +1079,33 @@ void playGame()
         EndDrawing();
     }
 
+    //saves the high score before closing
+    ifstream readFile("save/highScore.txt");
+    int prevScore;
+    readFile >> prevScore;
+    readFile.close();
+
+    ofstream saveFile("save/highScore.txt", ios::trunc);
+
+    if(saveFile.is_open())
+    {
+        if(highScore > prevScore)
+        {
+            saveFile << highScore;
+        }
+        else
+        {
+            saveFile << prevScore;
+        }
+
+        saveFile.close();
+    }
+    else
+    {
+        printf("\nError: Score Not Saved\n");
+
+    }
+
     CloseWindow(); //if the program reaches this then it is because the user wanted to quit the program
     exit(0);
 }
@@ -1119,6 +1174,33 @@ void gameOver()
         EndDrawing();
     }
     
+    //saves the high score before closing
+    ifstream readFile("save/highScore.txt");
+    int prevScore;
+    readFile >> prevScore;
+    readFile.close();
+
+    ofstream saveFile("save/highScore.txt", ios::trunc);
+
+    if(saveFile.is_open())
+    {
+        if(highScore > prevScore)
+        {
+            saveFile << highScore;
+        }
+        else
+        {
+            saveFile << prevScore;
+        }
+
+        saveFile.close();
+    }
+    else
+    {
+        printf("\nError: Score Not Saved\n");
+
+    }
+
     CloseWindow();
     exit(0);
 }
@@ -1189,7 +1271,21 @@ int main(void)
     //sets the start X location and Y move value for the swoopers since it depends on screen size
     swooperLeftX = GetScreenWidth() / 4;
     swooperRightX = GetScreenWidth() / 4 * 3;
-    swooperYMoveValue = (shipFlairYPos - swooperYValue) / 120.0f; // divide by 120 bc 60fps * 2 sec = 120 frames
+    swooperYMoveValue = ((shipFlairYPos + shipFlairHeight) - swooperYValue) / 120.0f; // divide by 120 bc 60fps * 2 sec = 120 frames
+
+    //loads your high score
+    ifstream saveFile("save/highScore.txt");
+    int savedScore;
+    saveFile >> savedScore;
+    if(savedScore >= 0)
+    {
+        highScore = savedScore;
+    }
+    else
+    {
+        printf("\nCorrupted save file!\n");
+    }
+    saveFile.close();
 
     //displays start menu
     startMenu();
