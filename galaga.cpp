@@ -1064,7 +1064,7 @@ void gameOver()
     lives = 3;
     timeLastHit = 0;
     wave = 1;
-    
+
     for(int i = 0; i < numberOfEnemies; i++)
     {
         enemies[i] = {-1, -1, -1, -1};
@@ -1127,7 +1127,6 @@ void gameOver()
 int main(void)
 {
     //starts the window up and sets game to 60fps
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 600, "Galaga");
     SetTargetFPS(60);
 
