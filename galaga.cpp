@@ -71,7 +71,7 @@ const float rocketMoveValue = 4;
 int timeLastFired = 0;
 
 //value for which wave you are on
-int wave = 2;
+int wave = 1;
 int currentWave3SpawnIndex = 0;
 
 //value for all of the enemy ships
